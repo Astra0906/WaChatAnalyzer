@@ -72,6 +72,7 @@ if uploaded_file is not None:
         #HEATMAp
         st.title("Weekly activity map")
         h_map=helper.h_map(s_user,df)
+
         fig,ax=plt.subplots()
         ax=sns.heatmap(h_map)
 
@@ -84,20 +85,21 @@ if uploaded_file is not None:
         if s_user=="Overall":
             st.title("Most busy Users ")
 
-            col1,col2=st.columns([1.4,1],gap='medium',vertical_alignment='bottom')
+            col1,col2=st.columns([1.4,1],gap='medium',vertical_alignment='top')
             source,bar=helper.fetch_act_bar(df)
 
             with col1:
-                st.write("Bar chart ")
+                st.subheader("Bar chart ")
                 st.bar_chart(source.head())
 
             with col2:
-                st.write("activity table")
+                st.subheader("activity table")
                 st.dataframe(bar)
 
         #wordcloud
         df_wc=helper.create_wc(s_user,df)
         st.title("WordCloud")
+
 
         fig,ax=plt.subplots()
         ax.imshow(df_wc)
