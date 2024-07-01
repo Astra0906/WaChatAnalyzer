@@ -1,13 +1,25 @@
 import re
 
 import pandas as pd
+from datetime import datetime
 def preprocess(data):
-
-    pattern = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s-\s'
+    pattern = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s\w{2}\s-\s'
+    pattern1 = re.compile(r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}:\d{2}\s?[APMapm]{2})')
     messages = re.split(pattern, data)[1:]
-    pattern1 = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}'
-    dates = re.findall(pattern1, data)
+    if len(messages) == 0:
+        pattern = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s-\s'
+        pattern1 = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}'
+        messages = re.split(pattern, data)[1:]
+        dates = re.findall(pattern1, data)
+    else:
+        date = pattern1.findall(data)
+        dates = []
+        for match in date:
+            original_date = datetime.strptime(match, '%m/%d/%y, %I:%M %p')
+            converted_date = original_date.strftime('%m/%d/%y, %H:%M')
+            dates.append(converted_date)
 
+#Upper want to fix for xtra features
     df = pd.DataFrame({'u_dms': messages, 'date': dates})
     df['date'] = pd.to_datetime(df['date'], format='%m/%d/%y, %H:%M')
 

@@ -6,7 +6,7 @@ import  seaborn as sns
 
 st.sidebar.title("WA chat Analyzer")
 
-uploaded_file = st.sidebar.file_uploader("Choose a file")
+uploaded_file = st.sidebar.file_uploader("Upload chat export file")
 if uploaded_file is not None:
 
     bytes_data = uploaded_file.getvalue()
@@ -14,13 +14,16 @@ if uploaded_file is not None:
     df=preprocessor.preprocess(data)
 
     user_list=df['user'].unique().tolist()
-    user_list.remove("Notification")
+
+    if 'Notification' in user_list:
+        user_list.remove('Notification')
+
     user_list.sort()
     user_list.insert(0,"Overall")
     s_user=st.sidebar.selectbox("Analysis wrt user",user_list)
     if st.sidebar.button("Show Analysis"):
         st.title("Top Statistics")
-        col1,col2,col3,col4= st.columns(4,vertical_alignment="bottom")
+        col1,col2,col3,col4= st.columns([1,1.2,1,1],vertical_alignment="bottom",gap='small')
 
         num_dm,num_word,media,num_url,act_days=helper.fetch_sts(s_user,df)
 
@@ -81,7 +84,7 @@ if uploaded_file is not None:
         if s_user=="Overall":
             st.title("Most busy Users ")
 
-            col1,col2=st.columns([3,2],gap='large',vertical_alignment='bottom')
+            col1,col2=st.columns([1.4,1],gap='medium',vertical_alignment='bottom')
             source,bar=helper.fetch_act_bar(df)
 
             with col1:
@@ -110,17 +113,29 @@ if uploaded_file is not None:
 
         #EMOJI analyze
         emo_df=helper.emoji_lst(s_user,df)
-
         st.title("Emoji Analysis")
-        col1,col2=st.columns(2)
-        with col1:
+        if emo_df.shape[0]==0:
+            st.write(" There is no emojis")
+        else:
 
-            st.dataframe(emo_df)
+            col1, col2 = st.columns([1,1.7],vertical_alignment='bottom')
+            with col1:
 
-        with col2:
-            fig,ax=plt.subplots()
-            ax.pie(emo_df[1].head(),labels=emo_df[0].head(),autopct="%0.2f")
-            st.pyplot(fig)
+                st.dataframe(emo_df)
+
+            with col2:
+                st.subheader('Pie chart')
+                plt.style.use('dark_background')
+                plt.rcParams['font.family']='Noto'
+
+                fig, ax = plt.subplots()
+
+                ax.pie(emo_df[1].head(), labels=emo_df[0].head(), autopct="%0.2f")
+
+                st.pyplot(fig)
+
+
+
 
 
 
