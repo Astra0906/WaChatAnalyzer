@@ -7,7 +7,9 @@ import  seaborn as sns
 st.sidebar.title("WA chat Analyzer")
 
 uploaded_file = st.sidebar.file_uploader("Upload chat export file")
-if uploaded_file is not None:
+if uploaded_file is None:
+    st.info("Open the side bar and please upload your chat export file in .txt format without media")
+else:
 
     bytes_data = uploaded_file.getvalue()
     data=bytes_data.decode("utf-8")
@@ -120,8 +122,9 @@ if uploaded_file is not None:
             st.write(" There is no emojis")
         else:
 
-            col1, col2 = st.columns([1,1.7],vertical_alignment='bottom')
+            col1, col2 = st.columns([1,1.7],vertical_alignment='top')
             with col1:
+                st.subheader("Emoji List")
 
                 st.dataframe(emo_df)
 

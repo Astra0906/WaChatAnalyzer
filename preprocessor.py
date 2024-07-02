@@ -1,7 +1,7 @@
 import re
-
 import pandas as pd
 from datetime import datetime
+import date_fix
 def preprocess(data):
     pattern = '\d{1,2}/\d{1,2}/\d{2,4},\s\d{1,2}:\d{2}\s\w{2}\s-\s'
     pattern1 = re.compile(r'(\d{1,2}/\d{1,2}/\d{2,4}, \d{1,2}:\d{2}\s?[APMapm]{2})')
@@ -12,16 +12,13 @@ def preprocess(data):
         messages = re.split(pattern, data)[1:]
         dates = re.findall(pattern1, data)
     else:
-        date = pattern1.findall(data)
-        dates = []
-        for match in date:
-            original_date = datetime.strptime(match, '%m/%d/%y, %I:%M %p')
-            converted_date = original_date.strftime('%m/%d/%y, %H:%M')
-            dates.append(converted_date)
+        dates = pattern1.findall(data)
+
 
 #Upper want to fix for xtra features
+    fmt=date_fix.format_find(dates)
     df = pd.DataFrame({'u_dms': messages, 'date': dates})
-    df['date'] = pd.to_datetime(df['date'], format='%m/%d/%y, %H:%M')
+    df['date'] = pd.to_datetime(df['date'], format=fmt)
 
     users = []
     messages = []
